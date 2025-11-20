@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Simple Scoreboard</title>
+  <style>
+    :root {
+      --bg: #0b1220;
+      --card: #0f1724;
+      --accent: #15b78e;
+      --muted: #94a3b8;
+      --white: #e6eef8;
+    }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      font-family: system-ui, Arial, sans-serif;
+      background: linear-gradient(180deg,#071024 0%, #071a2a 100%);
+      color: var(--white);
+    }
+
+    .scoreboard {
+      display: flex;
+      gap: 50px;
+      padding: 28px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border-radius: 14px;
+      box-shadow: 0 8px 30px rgba(2,6,23,0.7);
+      align-items: stretch;
+    }
+
+    .team {
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      padding: 18px;
+      border-radius: 10px;
+      width: 220px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .team h2 { margin: 0; font-size: 14px; color: var(--muted); letter-spacing: 1px; }
+    .score {
+      font-family: "Segoe UI", Roboto, system-ui;
+      font-size: 72px;
+      margin: 0;
+      color: var(--accent);
+      letter-spacing: 2px;
+      width: 100%;
+      background: rgba(255,255,255,0.02);
+      padding: 6px 0;
+      border-radius: 6px;
+    }
+
+    .buttons {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      padding: 10px 12px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+      background: rgba(255,255,255,0.03);
+      color: var(--white);
+      transition: transform .08s ease, background .12s ease;
+      min-width: 56px;
+    }
+    .btn:active { transform: translateY(2px) scale(.99); }
+    .btn[data-value="1"] { border: 1px solid rgba(255,255,255,0.03); }
+    .btn[data-value="2"] { box-shadow: inset 0 -3px 0 rgba(0,0,0,0.12); }
+    .controls { display:flex; gap:8px; margin-top:8px; }
+    .reset { background:#ef4444; color:white; padding:8px 10px; border-radius:8px; }
+
+    .wide-reset { width:100%; }
+  </style>
+</head>
+<body>
+
+  <div class="scoreboard" role="region" aria-label="Scoreboard">
+    <!-- Team 1 -->
+    <div class="team" data-team="1">
+      <h2>Team A</h2>
+      <div id="score1" class="score" aria-live="polite">0</div>
+
+      <div class="buttons" role="group" aria-label="Team A scoring buttons">
+        <button class="btn" data-team="1" data-value="5">+5</button>
+        <button class="btn" data-team="1" data-value="10">+10</button>
+        <button class="btn" data-team="1" data-value="20">+20</button>
+      </div>
+
+      <div class="controls">
+        <button id="reset1" class="btn reset">Reset</button>
+      </div>
+    </div>
+
+    <!-- Team 2 -->
+    <div class="team" data-team="2">
+      <h2>Team B</h2>
+      <div id="score2" class="score" aria-live="polite">0</div>
+
+      <div class="buttons" role="group" aria-label="Team B scoring buttons">
+        <button class="btn" data-team="2" data-value="1">+1</button>
+        <button class="btn" data-team="2" data-value="2">+2</button>
+        <button class="btn" data-team="2" data-value="3">+3</button>
+      </div>
+
+      <div class="controls">
+        <button id="reset2" class="btn reset">Reset</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Keep scores in JS variables
+    const scores = { 1: 0, 2: 0 };
+
+    // Helper to update DOM
+    function renderScore(team) {
+      const el = document.getElementById('score' + team);
+      if (el) el.textContent = scores[team];
+    }
+
+    // Attach click handlers to all scoring buttons
+    document.querySelectorAll('button[data-value]').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const team = Number(btn.dataset.team);
+        const value = Number(btn.dataset.value);
+        if (!Number.isFinite(team) || !Number.isFinite(value)) return;
+        scores[team] += value;
+        renderScore(team);
+      });
+    });
+
+    // Reset buttons
+    document.getElementById('reset1').addEventListener('click', () => {
+      scores[1] = 0;
+      renderScore(1);
+    });
+    document.getElementById('reset2').addEventListener('click', () => {
+      scores[2] = 0;
+      renderScore(2);
+    });
+
+    // Initial render (just in case)
+    renderScore(1);
+    renderScore(2);
+  </script>
+</body>
+</html>
